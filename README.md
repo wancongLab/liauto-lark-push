@@ -3,6 +3,8 @@
 > 把一台理想汽车（Li Auto）的状态接进飞书：**20 张自动推送卡片 + 14 张查询卡（共 34 张）**、一个手机优先的网页面板、一个能发给家人的行程分享页。
 > 跑在 Cloudflare Workers 上，Free 套餐就够——不用买服务器、不用公网 IP、**也不用买域名**（`*.workers.dev` 免费地址就能跑；只有面板里的高德地图可能需要自有域名，见[部署教程](docs/setup-cloudflare.md#6-要不要买域名不买也能跑)）。
 
+<p align="center"><b>如果这个项目对你有用，点个 ⭐ Star 支持一下</b>　·　想加什么卡片，<a href="https://github.com/wancongLab/liauto-lark-push/issues">开个 Issue 告诉我</a></p>
+
 ## 真机实拍
 
 下面全部是**手机真实截屏**（iPhone，飞书对话窗口原样），不是渲染图。按一天里发生的顺序排：先看状态和报告，再出门回家，最后补能和行程。
