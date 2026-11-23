@@ -817,21 +817,28 @@ export async function handleTripShare(request, env, url) {
   //    截图页零外部请求 —— 否则浏览器还要再请求一次同域 /bg.png，Worker 再回头调高德，
   //    在 Browser Rendering 冷启动里这一跳经常来不及，截出来就是「黑底 + 一条蓝折线」。
   let embedBg = "";
+  //  D-201：高德的偶发超时是**成片出现**的（同一次采集里逆地理和静态图会一起失败），
+  //    所以这里给两次机会：第一次 15 s 超时后隔 400 ms 再要一次，成功率明显高于只试一次。
+  //    （2026-11-23 17:13 那趟 18.8 km 的卡片就是「坐标 + 黑底图」，两个症状同一个原因。）
   if (embed) {
-    try {
-      const img = await fetchStaticMap(env, {
-        center: { lat: view.center.lat, lon: view.center.lon }, zoom: Math.round(view.zoom),
-        w: Math.round(MAP_W / 2), h: Math.round(MAP_H / 2), scale: 2,
-      });
-      const buf = new Uint8Array(await img.arrayBuffer());
-      if (buf.length) {
-        let bin = "";
-        for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
-        const ct = String(img.headers.get("Content-Type") || "image/png").split(";")[0].trim() || "image/png";
-        embedBg = `data:${ct};base64,${btoa(bin)}`;
+    for (let attempt = 1; attempt <= 2 && !embedBg; attempt++) {
+      try {
+        const img = await fetchStaticMap(env, {
+          center: { lat: view.center.lat, lon: view.center.lon }, zoom: Math.round(view.zoom),
+          w: Math.round(MAP_W / 2), h: Math.round(MAP_H / 2), scale: 2,
+        });
+        const buf = new Uint8Array(await img.arrayBuffer());
+        if (buf.length) {
+          let bin = "";
+          for (let i = 0; i < buf.length; i += 0x8000) bin += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+          const ct = String(img.headers.get("Content-Type") || "image/png").split(";")[0].trim() || "image/png";
+          embedBg = `data:${ct};base64,${btoa(bin)}`;
+        }
+      } catch (err) {
+        // 取不到就回退到原来的 /bg.png 链路（浏览器自己重试），不要让详情页整体 502
+        console.log(`embed 底图内联失败（第 ${attempt} 次），回退 bg.png:`, err.message);
+        if (attempt === 1) await new Promise((r) => setTimeout(r, 400));
       }
-    } catch (err) {
-      console.log("embed 底图内联失败，回退 bg.png:", err.message);
     }
   }
 

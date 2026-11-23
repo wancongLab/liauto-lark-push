@@ -369,6 +369,8 @@ async function collectInner(env, ctx = {}) {
 
     // ── 3.3 异常自检（胎压/低电量/低油/插枪未充电，D-071）──
     await handleAnomalies(env, D1, vehicle, sample, vss, results, log);
+    // ── 3.35 修补历史行程里「坐标当地址」的记录（D-201）──
+    await repairTripPlaces(env, D1, vin, log);
     await handleEnergyLow(env, D1, vehicle, sample, results, log);
 
     // ── 3.4 主动提醒（保养/OTA/停车掉电/充电故障，D-088）──
@@ -793,6 +795,100 @@ async function fetchChargeSessions(client, vin) {
  * 地址压到一屏读得完（D-200）：去掉 省 / 市 / 区县 前缀，只留街道往后。
  *  泊车卡折叠行只有一行位置，完整地址会被截断成看不出是哪的半截话。
  */
+/**
+ * 逆地理（带 D1 缓存 + 一次重试）—— D-201
+ *  D-200 之后才能真正用到：2026-11-23 17:13 那趟 18.8 km 的行程，
+ *  高德 regeo 直接 15 s 超时（err="The operation was aborted due to timeout"），
+ *  卡片上就只剩「28.57, 115.86」。
+ *  两个补救：① 同一个位置只问一次高德（按 ~11 m 网格缓存 90 天）；
+ *          ② 失败再试一次（超时基本是偶发抖动，隔 400 ms 重试成功率很高）。
+ */
+const ADDR_TTL_MS = 90 * 24 * 3600 * 1000;
+
+async function regeoCached(env, D1, pos) {
+  if (!pos || pos.lat == null || pos.lon == null) return null;
+  const key = `geo:addr:${Number(pos.lat).toFixed(4)},${Number(pos.lon).toFixed(4)}`;
+  try {
+    const hit = await db.getState(D1, key, null);
+    if (hit && hit.address && Date.now() - Number(hit.at_ms || 0) < ADDR_TTL_MS) return hit.address;
+  } catch { /* 缓存读失败就直连高德 */ }
+
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const g = await regeo(env, pos);
+      const addr = (g && g.address) || null;
+      if (addr) {
+        try { await db.setState(D1, key, { address: addr, at_ms: Date.now() }); } catch { /* ignore */ }
+        return addr;
+      }
+      return null;
+    } catch (err) {
+      if (attempt === 2) return null;
+      await new Promise((r) => setTimeout(r, 400));
+    }
+  }
+  return null;
+}
+
+const COORD_LOC_RE = /^-?\d+\.\d+, *-?\d+\.\d+$/;
+
+/**
+ * 修补历史行程里「坐标当地址」的记录（D-201）。
+ *  高德偶发超时会让某几条行程只存到「28.57, 115.86」，卡片就一直那么显示；
+ *  这里每轮采集顺手补最多 3 条（有 D1 缓存，重复位置不重复花钱），
+ *  遇到第一次失败就停 —— 说明高德这会儿不通，别把整轮采集拖死。
+ */
+async function repairTripPlaces(env, D1, vin, log = () => {}) {
+  try {
+    const { results } = await D1
+      .prepare("SELECT id, start_lat, start_lon, end_lat, end_lon, start_loc, end_loc FROM trip_log WHERE vin=? ORDER BY id DESC LIMIT 20")
+      .bind(vin).all();
+    const geos = await db.listGeofences(D1, vin);
+    let fixed = 0;
+    for (const r of results || []) {
+      if (fixed >= 3) break;
+      const badStart = r.start_loc && COORD_LOC_RE.test(String(r.start_loc).trim());
+      const badEnd = r.end_loc && COORD_LOC_RE.test(String(r.end_loc).trim());
+      if (!badStart && !badEnd) continue;
+      let startLoc = r.start_loc;
+      let endLoc = r.end_loc;
+      if (badStart && r.start_lat != null) {
+        const a = await regeoCached(env, D1, { lat: r.start_lat, lon: r.start_lon });
+        if (!a) break;
+        startLoc = a;
+      }
+      if (badEnd && r.end_lat != null) {
+        const a = await regeoCached(env, D1, { lat: r.end_lat, lon: r.end_lon });
+        if (!a) break;
+        endLoc = a;
+      }
+      // 两个地点都拿到地址了，就把当初那条「逆地理失败」的错误说明一起清掉，
+      // 否则以后翻库还会以为这条没修好（D-201）
+      const stillBad = (typeof startLoc === "string" && COORD_LOC_RE.test(startLoc.trim()))
+        || (typeof endLoc === "string" && COORD_LOC_RE.test(endLoc.trim()));
+      await D1.prepare("UPDATE trip_log SET start_loc=?, end_loc=?, route_error=? WHERE id=?")
+        .bind(startLoc, endLoc, stillBad ? "逆地理未取到地址（已退回坐标）" : null, r.id).run();
+      fixed++;
+      log(`行程 #${r.id} 地点已补成地址`);
+    }
+    return fixed;
+  } catch (err) {
+    log(`修补行程地点失败（忽略）: ${err.message}`);
+    return 0;
+  }
+}
+
+/**
+ * 位置的显示名：围栏名 → 逆地理地址 → 「28.57, 115.86」兜底。
+ *  行程起终点、泊车地点、位置卡都走这里，口径统一（D-201）。
+ */
+async function placeFor(env, D1, pos, geos) {
+  const label = locLabel(pos, geos);
+  if (!label || label === "--" || !/^-?\d/.test(label)) return label;
+  const addr = await regeoCached(env, D1, pos);
+  return addr || label;
+}
+
 function compactPlace(addr) {
   const s = String(addr || "").trim();
   if (!s) return "";
@@ -906,6 +1002,18 @@ export async function backfillTrips(env, D1, vin, from, to, opts = {}) {
     const startPos = positions.length ? { lat: positions[0].lat, lon: positions[0].lon } : null;
     const endPos = positions.length ? { lat: positions[positions.length - 1].lat, lon: positions[positions.length - 1].lon } : null;
 
+    //  D-201：起终点在**写库前**就解析成地址，卡片推出去时就已经是地名（不用等 rebuild）。
+    //  以前这里只写 `locLabel()`，围栏外就是「28.57, 115.86」—— 2026-11-23 17:13 那趟 18.8 km
+    //  的卡片就是这么来的（rebuild 那次高德超时了）。
+    const startLoc = await placeFor(env, D1, startPos, geos);
+    let endLoc = await placeFor(env, D1, endPos, geos);
+    // 起终点几乎同址（<20 m）时终点沿用起点：否则会出现「起=地址、终=坐标」的半截卡
+    if (startPos && endPos
+      && Math.abs(endPos.lat - startPos.lat) + Math.abs(endPos.lon - startPos.lon) < 0.0002
+      && endLoc !== startLoc) {
+      endLoc = startLoc;
+    }
+
     const id = await db.saveTripLog(D1, {
       vin, started_at: a.sampled_at,
       ended_at: existing && existing.ended_at && existing.ended_at > endRow.sampled_at ? existing.ended_at : endRow.sampled_at,
@@ -915,7 +1023,7 @@ export async function backfillTrips(env, D1, vin, from, to, opts = {}) {
       engine_km: existing && existing.engine_km !== null ? existing.engine_km : engineFinal,
       ad_km: existing && existing.ad_km !== null ? existing.ad_km : adKm,
       battery_from: num(a.battery), battery_to: num(b.battery),
-      start_loc: locLabel(startPos, geos), end_loc: locLabel(endPos, geos),
+      start_loc: startLoc, end_loc: endLoc,
       start_lat: startPos?.lat ?? null, start_lon: startPos?.lon ?? null,
       end_lat: endPos?.lat ?? null, end_lon: endPos?.lon ?? null,
       created_at: shanghaiNow(),
@@ -1132,18 +1240,18 @@ async function buildTripRoute(env, D1, vin, tripId, from, to, startPos, endPos) 
   const points = smoothPath(raw, 8);
   const json = JSON.stringify(points.map((p) => [+Number(p.lon).toFixed(5), +Number(p.lat).toFixed(5)]));
 
-  // 起止地点名：优先逆地理（"示例路示例小区(南门)" 这种），失败就留空沿用围栏名
-  let startLoc = null;
-  let endLoc = null;
-  let err = null;
-  try {
-    if (startPos) startLoc = (await regeo(env, startPos)).address;
-    if (endPos && (!startPos || Math.abs(endPos.lat - startPos.lat) + Math.abs(endPos.lon - startPos.lon) > 0.0002)) {
-      endLoc = (await regeo(env, endPos)).address;
-    }
-  } catch (e) {
-    err = `逆地理失败: ${e.message}`;
+  // 起止地点名：围栏名 → 逆地理地址 → 坐标（D-201 统一走 placeFor：带缓存 + 重试）
+  const geos2 = await db.listGeofences(D1, vin);
+  let startLoc = startPos ? await placeFor(env, D1, startPos, geos2) : null;
+  let endLoc = endPos ? await placeFor(env, D1, endPos, geos2) : null;
+  // 起终点几乎同址时终点沿用起点，别出现「起=地址、终=坐标」
+  if (startPos && endPos
+    && Math.abs(endPos.lat - startPos.lat) + Math.abs(endPos.lon - startPos.lon) < 0.0002
+    && endLoc !== startLoc) {
+    endLoc = startLoc;
   }
+  const isCoord = (v) => typeof v === "string" && /^-?\d+\.\d+, *-?\d+\.\d+$/.test(v.trim());
+  const err = (startPos && isCoord(startLoc)) || (endPos && isCoord(endLoc)) ? "逆地理未取到地址（已退回坐标）" : null;
 
   await db.updateTripRoute(D1, tripId, {
     route_points: json,
