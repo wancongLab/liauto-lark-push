@@ -1,0 +1,7 @@
+3D 车模：Lixiang L9 2024 by MattDoesBlender
+来源：https://sketchfab.com/3d-models/lixiang-l9-2024-c1849ebdf7a54502b249526f88695cc9
+许可：Creative Commons Attribution (CC BY 4.0) —— 须署名
+
+处理：由 Sketchfab 原始 .glb（74.3 MB / 1,709,817 三角形）经
+      gltf-transform optimize → simplify → Draco 压缩为 1.01 MB / 743,448 三角形，
+      并统一替换为可换色的 PBR 车漆材质（银色 #9aa2ad，metalness 0.85，roughness 0.30）。

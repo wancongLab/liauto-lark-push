@@ -1,0 +1,172 @@
+[
+ {
+  "file": "01-vehicle-status.png",
+  "title": "车辆状态",
+  "group": "状态与查询"
+ },
+ {
+  "file": "02-battery.png",
+  "title": "电量续航",
+  "group": "状态与查询"
+ },
+ {
+  "file": "12-where.png",
+  "title": "车辆位置",
+  "group": "状态与查询"
+ },
+ {
+  "file": "13-maintenance-query.png",
+  "title": "保养剩余",
+  "group": "状态与查询"
+ },
+ {
+  "file": "17-fuel-price.png",
+  "title": "油价",
+  "group": "状态与查询"
+ },
+ {
+  "file": "18-support.png",
+  "title": "帮助与客服",
+  "group": "状态与查询"
+ },
+ {
+  "file": "03-today.png",
+  "title": "今日小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "04-daily-summary.png",
+  "title": "昨日用车小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "05-week-now.png",
+  "title": "本周用车小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "06-week-last.png",
+  "title": "上周用车小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "07-month-now.png",
+  "title": "本月用车小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "08-month-last.png",
+  "title": "上月用车小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "09-energy.png",
+  "title": "能耗小结",
+  "group": "用车报告"
+ },
+ {
+  "file": "10-charge-state.png",
+  "title": "充电情况",
+  "group": "充电与补能"
+ },
+ {
+  "file": "14-charge-bills.png",
+  "title": "充电账单",
+  "group": "充电与补能"
+ },
+ {
+  "file": "15-charge-history.png",
+  "title": "最近充电",
+  "group": "充电与补能"
+ },
+ {
+  "file": "16-charge-price.png",
+  "title": "当前电价",
+  "group": "充电与补能"
+ },
+ {
+  "file": "21-charge-start.png",
+  "title": "开始充电",
+  "group": "充电与补能"
+ },
+ {
+  "file": "22-charge-done.png",
+  "title": "充电完成",
+  "group": "充电与补能"
+ },
+ {
+  "file": "26-refuel.png",
+  "title": "加油已完成",
+  "group": "充电与补能"
+ },
+ {
+  "file": "11-trip.png",
+  "title": "行程小结",
+  "group": "行程与停车"
+ },
+ {
+  "file": "23-parked-home.png",
+  "title": "到家了（停车照片）",
+  "group": "行程与停车"
+ },
+ {
+  "file": "24-parked-out.png",
+  "title": "车辆已停好（在外停车）",
+  "group": "行程与停车"
+ },
+ {
+  "file": "25-departure.png",
+  "title": "离开家了",
+  "group": "行程与停车"
+ },
+ {
+  "file": "27-parking-drain.png",
+  "title": "停车掉电",
+  "group": "行程与停车"
+ },
+ {
+  "file": "28-vehicle-anomaly.png",
+  "title": "车辆异常",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "29-charge-aborted.png",
+  "title": "充电提前结束",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "30-charge-price-push.png",
+  "title": "建议及时充电",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "31-energy-low.png",
+  "title": "能量不足提醒",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "32-cred-warning.png",
+  "title": "授权即将过期",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "33-ota-upgraded.png",
+  "title": "车辆已升级",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "34-maintenance-push.png",
+  "title": "保养提醒",
+  "group": "提醒与告警"
+ },
+ {
+  "file": "19-command-menu.png",
+  "title": "指令菜单",
+  "group": "指令与设置"
+ },
+ {
+  "file": "20-push-switches.png",
+  "title": "推送开关",
+  "group": "指令与设置"
+ }
+]

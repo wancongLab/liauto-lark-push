@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0f1419">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="理想助手">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<title>理想助手</title>
+<style>
+/* ══ 设计令牌（D-096）──────────────────────────────────────────────
+   单一来源：docs/design/260826_设计令牌与组件规范.md §2/§3
+   这里只允许「语义令牌」，不要在组件里写字面色值。 */
+:root{
+  color-scheme: dark;
+  --bg:#0f1419;        /* 画布 */
+  --bg-2:#151d26;      /* 卡内凹槽 */
+  --card:#1a2430;      /* 卡片面 */
+  --line:#243141;      /* 描边 */
+  --line-soft:#1e2a38; /* 卡内分隔 */
+  --fg:#e8eef5;        /* 主文字 */
+  --fg-2:#b9c7d6;      /* 次文字 */
+  --dim:#8ea0b4;       /* 标签/辅助 */
+  --accent:#4f8cff;    /* 唯一强调蓝 */
+  --accent-ink:#9fc3ff;/* 蓝底上的字 */
+  --green:#35c48c;
+  --amber:#f0a92e;
+  --red:#f0554d;
+  --r-lg:16px; --r-md:12px; --r-sm:10px;
+  --tap:44px;          /* 触控目标下限 */
+  --fs-label:12px;     /* 字号下限，不得再小 */
+  --fs-metric:19px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom)}
+.wrap{max-width:880px;margin:0 auto;padding:16px 14px 40px}
+
+/* ── 头部 ── */
+header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+header h1{font-size:19px;margin:0;font-weight:650;letter-spacing:.01em}
+header .sub{color:var(--dim);font-size:var(--fs-label);margin-top:3px}
+.badge{margin-left:auto;flex:none;font-size:var(--fs-label);padding:4px 10px;border-radius:999px;
+  background:var(--bg-2);color:var(--dim);border:1px solid var(--line);white-space:nowrap}
+.badge.ok{background:#123526;color:var(--green);border-color:#1d5a41}
+.badge.bad{background:#3a1c1c;color:var(--red);border-color:#6b2f2f}
+
+/* ── 卡片外壳 ── */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;margin-bottom:12px}
+.card-h{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.card-h h2{margin:0}
+.card-meta{margin-left:auto;color:var(--dim);font-size:var(--fs-label);font-variant-numeric:tabular-nums}
+.card h2{font-size:13px;color:var(--dim);margin:0 0 12px;font-weight:600;letter-spacing:.03em}
+.card-h h2{font-size:13px;margin:0}
+.hint{color:var(--dim);font-size:13px;line-height:1.6;padding:14px 0;text-align:center}
+/* D-194：线路图起点/终点自绘标记（AMap 默认白底 label 在暗色底图上不可读） */
+.mk{display:inline-flex;align-items:center;gap:5px;font-size:12px;line-height:1;white-space:nowrap;
+  padding:4px 7px;border-radius:999px;background:rgba(15,20,25,.88);border:1px solid var(--line);
+  color:var(--fg);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.mk i{width:7px;height:7px;border-radius:50%;display:block}
+.mk-a i{background:var(--green)}
+.mk-b i{background:var(--amber)}
+
+/* ── Hero：电量环 + 三续航 ── */
+.hero{display:grid;grid-template-columns:112px 1fr 288px;gap:18px;align-items:center;padding:14px 16px}
+.ring{position:relative;width:112px;height:112px;flex:none}
+.ring svg{width:112px;height:112px;transform:rotate(-90deg);display:block}
+.ring .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .t b{font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.ring .t s{font-size:var(--fs-label);color:var(--dim);text-decoration:none;margin-top:3px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;min-width:0}
+.kpi .k{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:9px 11px;min-width:0}
+.kpi .l{display:block;font-size:var(--fs-label);color:var(--dim)}
+.kpi .v{display:block;font-size:21px;font-weight:650;font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;margin-top:2px;white-space:nowrap}
+.kpi .v small{font-size:var(--fs-label);font-weight:500;color:var(--dim);margin-left:3px;letter-spacing:0}
+.carmedia{height:168px;border-radius:var(--r-md);overflow:hidden;position:relative;
+  background:radial-gradient(120% 90% at 50% 20%,#1b2836 0%,#141c25 60%,#111820 100%)}
+.carmedia img{width:100%;height:100%;object-fit:contain;display:block}
+#car{position:absolute;inset:0;width:100%;height:100%;background:transparent;opacity:0;transition:opacity .45s ease}
+.car3d{position:absolute;right:8px;bottom:8px;z-index:2;font:600 12px/1 -apple-system,"PingFang SC",sans-serif;
+  color:var(--dim);background:rgba(15,20,25,.72);border:1px solid var(--line);border-radius:999px;
+  min-width:40px;min-height:28px;cursor:pointer;backdrop-filter:blur(4px)}
+.car3d:hover{color:var(--fg);border-color:#31445c}
+.car3d[disabled]{opacity:.55;cursor:default}
+#car.in{opacity:1}
+
+/* ── 指标网格 ── */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.m{background:var(--bg-2);border:1px solid var(--line-soft);border-radius:var(--r-md);padding:10px 11px;min-width:0}
+.m .l{font-size:var(--fs-label);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m .v{font-size:var(--fs-metric);font-weight:650;margin-top:3px;font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;white-space:nowrap}
+.m .v small{font-size:var(--fs-label);color:var(--dim);font-weight:500;margin-left:3px;letter-spacing:0}
+
+/* ── 状态胶囊 ── */
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;
+  font-size:var(--fs-label);background:#24364c;color:var(--accent-ink);border:1px solid #2d4463;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.85}
+.pill.g{background:#123526;color:var(--green);border-color:#1d5a41}
+.pill.a{background:#3a2e13;color:var(--amber);border-color:#5a4718}
+.pill.grey{background:var(--bg-2);color:var(--dim);border-color:var(--line)}
+.pill.na::before{content:none}
+
+/* ── 胎压 ── */
+.tires{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;
+  border-top:1px solid var(--line-soft);padding-top:11px}
+.tires .cap{grid-column:1/-1;display:flex;justify-content:space-between;font-size:var(--fs-label);color:var(--dim)}
+.tires .c{min-width:0}
+.tires .c span{display:block;font-size:var(--fs-label);color:var(--dim)}
+.tires .c b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+.tires .c b i{font-style:normal;font-size:11px;color:var(--dim);font-weight:500;margin-left:3px}
+
+/* ── 宽表横向滚动容器（390 宽不再撑破页面，D-096）── */
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -2px}
+.tblwrap table{min-width:520px}
+
+/* ── 折叠 ── */
+details.more{margin-top:12px;border-top:1px solid var(--line-soft)}
+details.more summary{display:flex;align-items:center;min-height:var(--tap);cursor:pointer;
+  color:var(--dim);font-size:13px;list-style:none;user-select:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:"▾";margin-left:auto;transition:transform .2s;color:var(--dim)}
+details.more[open] summary::after{transform:rotate(180deg)}
+details.more .grid{margin-bottom:4px}
+
+/* ── 分组折叠（D-189）─────────────────────────────────────────────
+   11 张平铺卡同权重 → 收成 3 组：
+     首屏组：hero + 实时状态（常驻，不折叠）
+     明细组：智驾 / 里程 / 月汇总 / 账单 / 行程线路（组开，卡按频率各自折叠）
+     运维组：推送计划 / 采集健康 / 飞书绑定 / 操作（组默认关）
+   折叠态**不重复正文**，只在标题行给一个「标题数字」（基线 §2.2 不重复）。 */
+details.coll{margin-bottom:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden}
+details.coll>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;
+  user-select:none;padding:13px 16px;min-height:var(--tap)}
+details.coll>summary::-webkit-details-marker{display:none}
+details.coll>summary::after{content:"▾";margin-left:auto;color:var(--dim);transition:transform .2s;flex:none}
+details.coll[open]>summary::after{transform:rotate(180deg)}
+details.coll[open]>summary{border-bottom:1px solid var(--line-soft)}
+details.coll>summary .ttl{font-size:13px;font-weight:600;color:var(--fg);letter-spacing:.01em}
+details.coll>.body{padding:0 16px 16px}
+details.coll>.body>*:first-child{margin-top:12px}
+
+details.grp{margin-bottom:12px}
+details.grp>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;
+  user-select:none;padding:10px 2px;min-height:var(--tap)}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--line);
+  flex:none;transition:background .2s}
+details.grp[open]>summary::before{background:var(--accent)}
+details.grp>summary .gt{font-size:12px;color:var(--dim);font-weight:600}
+details.grp>summary .gm{margin-left:auto;font-size:var(--fs-label);color:var(--dim);opacity:.85}
+details.grp>summary::after{content:"▾";color:var(--dim);transition:transform .2s;flex:none}
+details.grp[open]>summary::after{transform:rotate(180deg)}
+
+/* ── 图表 ── */
+.rows{display:flex;flex-direction:column;gap:7px;font-size:13px}
+.rows div{display:flex;justify-content:space-between;gap:12px}
+.rows span:first-child{color:var(--dim)}
+.rows span:last-child{font-variant-numeric:tabular-nums;text-align:right}
+.bars{display:flex;align-items:flex-end;gap:3px;height:88px;padding-top:6px;touch-action:manipulation}
+/* D-190：每根柱子外面套一层满高的点击列，否则 2px 的短柱子手指点不中（触控目标 ≥44px 约定） */
+.bcol{flex:1;height:100%;display:flex;align-items:flex-end;cursor:pointer}
+.bcol i{width:100%;background:linear-gradient(180deg,var(--accent),#2d5fb8);border-radius:3px 3px 0 0;min-height:2px;opacity:.85;transition:opacity .12s}
+.bcol:hover i{opacity:1}
+.bcol.on i{opacity:1;background:linear-gradient(180deg,#6ba6ff,#3f7ae0)}
+.legend{display:flex;justify-content:space-between;color:var(--dim);font-size:var(--fs-label);margin-top:6px}
+/* D-190：柱图读数——点任意一根柱子显示当天里程（手机没有 hover，title 看不到） */
+.barread{margin-top:8px;font-size:var(--fs-label);color:var(--dim);font-variant-numeric:tabular-nums;min-height:17px}
+.barread b{color:var(--fg);font-weight:600}
+
+/* ── 行程卡片列表（D-190 / P0-2）──────────────────────────────────────────
+   手机 390px 下原六列表格实测每行 210px 高（里程/时长被折成两行、地点截断、
+   「看线路」挤到横向滚动区外），整卡 2500px。改成两行式卡片：一行里程+时间，
+   一行起止地点，按钮固定在行内右侧，不再依赖横向滚动。 */
+.tlist{display:flex;flex-direction:column}
+.trow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line-soft)}
+.trow:first-child{border-top:0;padding-top:2px}
+.tmain{flex:1;min-width:0}
+.tl1{display:flex;align-items:baseline;gap:8px;min-width:0}
+.tl1 b{font-size:15px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tl1 span{color:var(--dim);font-size:var(--fs-label);font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 地点两行：起点一行、终点一行（D-191）。单行时 390px 只能显示约 24 字，
+   而「→ 终点」永远排在起点之后 → 一律被 ellipsis 吃掉，用户报「只看得到起点」。
+   改成起点/终点各占一行，终点允许折到第二行（clamp 2），任何地址都能看全。 */
+.tl2{margin-top:3px;font-size:var(--fs-label);line-height:1.45}
+.tl2 .tla{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl2 .tlb{color:var(--fg-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tl2 .arw{color:var(--dim);margin-right:4px}
+.trow .btn{flex:none;min-height:44px;padding:0 12px;font-size:12px;white-space:nowrap}
+
+/* ── 表格 ── */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line-soft)}
+th{color:var(--dim);font-weight:500;font-size:var(--fs-label)}
+td:last-child,th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+
+/* ── 控件 ── */
+.err{color:var(--red);font-size:12px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:var(--r-sm);min-height:40px;
+  padding:0 16px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--fg-2)}
+.lnk{color:var(--accent);text-decoration:none;font-size:12px}
+input{font-family:inherit}
+
+/* ── 骨架屏 ── */
+.sk{background:linear-gradient(90deg,var(--bg-2) 0%,#1c2735 40%,var(--bg-2) 80%);
+  background-size:200% 100%;animation:sk 1.3s ease-in-out infinite;border-radius:var(--r-md)}
+.sk-tile{height:66px}
+.sk-line{height:12px;margin:8px 0;border-radius:6px}
+@keyframes sk{0%{background-position:120% 0}100%{background-position:-20% 0}}
+@media(prefers-reduced-motion:reduce){.sk{animation:none}}
+
+/* ── 移动端：390 宽为主场景 ───────────────────────────── */
+@media(max-width:760px){
+  .wrap{padding:12px 12px 32px}
+  .card{padding:14px;border-radius:14px}
+  details.coll>summary{padding:12px 14px}
+  details.coll>.body{padding:0 14px 14px}
+  .hero{grid-template-columns:104px 1fr;gap:14px;padding:14px}
+  .ring,.ring svg{width:104px;height:104px}
+  .ring .t b{font-size:27px}
+  .carmedia{display:none}               /* 手机不加载车图/1MB GLB，把首屏留给数据 */
+  .kpi{grid-template-columns:1fr;gap:0}
+  .kpi .k{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+    background:none;border:0;border-bottom:1px solid var(--line-soft);border-radius:0;padding:5px 0}
+  .kpi .k:last-child{border-bottom:0}
+  .kpi .v{font-size:18px;margin:0}
+  .grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .m{padding:9px 10px}
+  .btn{min-height:var(--tap);padding:0 14px;flex:1 1 auto}
+}
+@media(max-width:360px){
+  .kpi .l{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1 id="vname">理想助手</h1>
+      <div class="sub" id="vsub">加载中…</div>
+    </div>
+    <div class="badge" id="hbadge">—</div>
+  </header>
+
+  <!-- ── 首屏：电量 + 三续航（手机不加载车模，见 D-096）── -->
+  <section class="card hero">
+    <div class="ring">
+      <svg viewBox="0 0 120 120" width="112" height="112" aria-hidden="true">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="9"/>
+        <circle id="ring" cx="60" cy="60" r="52" fill="none" stroke="var(--green)" stroke-width="9"
+                stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+      </svg>
+      <div class="t"><b id="batt">--</b><s>电量</s></div>
+    </div>
+    <div class="kpi">
+      <div class="k"><span class="l">纯电续航</span><span class="v" id="hero_re">--<small>km</small></span></div>
+      <div class="k"><span class="l">燃油续航</span><span class="v" id="hero_rf">--<small>km</small></span></div>
+      <div class="k"><span class="l">综合续航</span><span class="v" id="hero_rc">--<small>km</small></span></div>
+      <div class="k"><span class="l">油量</span><span class="v" id="hero_fuel">--<small>%</small></span></div>
+    </div>
+    <div class="carmedia" id="carmedia">
+      <img id="carposter" src="/car-poster.webp?v=20261110b" alt="理想L6 Max" loading="lazy" decoding="async"
+           width="288" height="168">
+      <button class="car3d" id="car3d" type="button" aria-label="加载 3D 车模">3D</button>
+    </div>
+  </section>
+
+  <!-- ── 实时状态：4 个主指标 + 胎压条 + 折叠 5 项 ── -->
+  <section class="card">
+    <div class="card-h"><h2>实时状态</h2><span class="card-meta" id="updated">—</span></div>
+    <div class="pills" id="pills"></div>
+    <div class="grid" id="g1">
+      <div class="sk sk-tile"></div><div class="sk sk-tile"></div>
+      <div class="sk sk-tile"></div><div class="sk sk-tile"></div>
+    </div>
+    <div class="tires" id="tires"></div>
+    <details class="more">
+      <summary>更多状态</summary>
+      <div class="grid" id="g1b"></div>
+    </details>
+  </section>
+
+  <!-- ══ 明细组（D-189）：组默认开，卡按使用频率各自折叠 ══════════════ -->
+  <details class="grp" id="grp-detail" open>
+    <summary><span class="gt">用车明细</span><span class="gm" id="gm-detail">5 项</span></summary>
+
+    <details class="coll" id="card-ad">
+      <summary><span class="ttl">车机行程表 · 智驾</span><span class="card-meta" id="m-ad">—</span></summary>
+      <div class="body">
+        <div class="grid" id="g2"></div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-days" open>
+      <summary><span class="ttl">近 14 天里程</span><span class="card-meta" id="m-days">—</span></summary>
+      <div class="body">
+        <div class="bars" id="bars"></div>
+        <div class="legend"><span id="b0">—</span><span id="b1">—</span></div>
+        <div class="barread" id="barread">—</div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-month" open>
+      <summary><span class="ttl">本月汇总</span><span class="card-meta" id="m-month">—</span></summary>
+      <div class="body">
+        <div class="grid" id="g3"></div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-bill">
+      <summary><span class="ttl">充电账单 · 电价分摊</span><span class="card-meta" id="m-bill">—</span></summary>
+      <div class="body">
+        <div class="grid" id="billsum" style="grid-template-columns:repeat(4,1fr)"></div>
+        <div id="chg" style="margin-top:12px"></div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-trip">
+      <summary><span class="ttl">行程与线路</span><span class="card-meta" id="m-trip">—</span></summary>
+      <div class="body">
+        <div class="grid" id="tripsum"></div>
+        <div id="trips" style="margin-top:12px"></div>
+        <div id="tripmapwrap" style="margin-top:12px;display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <strong id="tripmapname">线路</strong>
+            <button class="btn ghost" onclick="closeTripMap()">收起</button>
+          </div>
+          <div id="tripmap" style="position:relative;width:100%;height:380px;border-radius:10px;overflow:hidden;background:#111"></div>
+        </div>
+      </div>
+    </details>
+  </details>
+
+  <!-- ══ 运维组（D-189）：组默认关 ═════════════════════════════════════ -->
+  <details class="grp" id="grp-ops">
+    <summary><span class="gt">推送与运维</span><span class="gm" id="gm-ops">4 项</span></summary>
+
+    <details class="coll" id="card-sched">
+      <summary><span class="ttl">推送计划</span><span class="card-meta" id="m-sched">—</span></summary>
+      <div class="body">
+        <div id="sched"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn ghost" onclick="pushNow('status')">推状态卡</button>
+          <button class="btn ghost" onclick="pushNow('daily')">推昨日小结</button>
+          <button class="btn ghost" onclick="pushNow('weekly')">推上周小结</button>
+          <button class="btn ghost" onclick="pushNow('monthly')">推上月小结</button>
+        </div>
+        <div id="schedmsg" style="margin-top:8px;font-size:12px;color:var(--dim)"></div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-health">
+      <summary><span class="ttl">采集健康</span><span class="card-meta" id="m-health">—</span></summary>
+      <div class="body">
+        <div class="rows" id="hl"></div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-feishu">
+      <summary><span class="ttl">飞书推送绑定</span><span class="card-meta" id="m-feishu">—</span></summary>
+      <div class="body">
+        <div class="rows" id="fs"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <input id="ftarget" placeholder="粘贴飞书会话链接（含 oc_xxx）或 open_id"
+                 style="flex:1;min-width:220px;background:var(--bg-2);border:1px solid var(--line);color:var(--fg);
+                    border-radius:10px;padding:0 12px;min-height:44px;font-size:14px">
+          <button class="btn" onclick="bindFeishu()">绑定</button>
+          <button class="btn" onclick="discoverFeishu()">自动发现（机器人所在群）</button>
+          <button class="btn ghost" id="btntestpush" onclick="testPush()">测试推送</button>
+        </div>
+        <div id="fmsg" style="margin-top:8px;font-size:12px;color:var(--dim)"></div>
+      </div>
+    </details>
+
+    <details class="coll" id="card-ops">
+      <summary><span class="ttl">操作</span><span class="card-meta" id="m-ops"></span></summary>
+      <div class="body">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="collectNow()">立即采集一次</button>
+          <button class="btn ghost" onclick="refreshAll()">刷新数据</button>
+        </div>
+        <div id="ops" style="margin-top:10px"></div>
+      </div>
+    </details>
+  </details>
+</div>
+
+<script>
+  // 高德 JS API（方案 ③，D-076）：面板里画真折线。
+  // JS API key 必须暴露在前端，这是设计如此；靠「安全密钥 + 域名白名单」保护。
+  window._AMapSecurityConfig = { securityJsCode: "YOUR_AMAP_SECURITY_CODE" };
+</script>
+<!-- 高德 JS API 不再写在这里：改成点「看线路」时由 app.js 动态注入（D-192）。
+     用 1.4.x（canvas2D 渲染器）：2.0 走 WebGL，在部分环境里瓦片贴图失败 → 整张地图全黑（D-084 实测）。
+     以前它是这里的普通 script：浏览器必须下完 114 KB + 高德自拉 49 KB 模块，才轮到 /app.js 执行，
+     6 个数据接口实测被推到 2.3 s（占整页字节 86.9%），而地图默认根本不显示。 -->
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "_说明": "复制成 tools/personal.json 后填自己的值；personal.json 已被 .gitignore 忽略，不会进仓库。",
+  "domain_root": "yourdomain",
+  "handle": "yourname",
+  "home_prefix": "/Users/",
+  "places": [
+    "你家小区名",
+    "附近道路或地标名"
+  ]
+}

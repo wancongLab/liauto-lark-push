@@ -1,0 +1,26 @@
+# 本地开发用（复制成 .dev.vars 后填值；.dev.vars 已在 .gitignore 里）
+#
+# 面板登录口令：浏览器访问 http://127.0.0.1:8788/login?k=<这里的值>
+API_TOKEN=change-me
+
+# 飞书自建应用（在飞书开放平台 → 凭证与基础信息里拿）
+FEISHU_APP_ID=
+FEISHU_APP_SECRET=
+# 卡片回调的 Encrypt Key（开放平台 → 事件订阅；不填则回调不做解密校验）
+FEISHU_ENCRYPT_KEY=
+
+# 高德「Web 服务」key（后端逆地理/静态图用；浏览器侧 JS key 另有域名白名单，见 README）
+AMAP_KEY=
+
+# 行程分享链接签名密钥（随便一串长随机字符串）
+TRIP_SHARE_SECRET=dev-only-not-a-secret
+# 分享链接有效期（天）
+TRIP_LINK_TTL_DAYS=7
+
+# 车辆数据源：sample = 内置模拟数据；custom = 你自己实现 vehicle/custom.js
+VEHICLE_PROVIDER=sample
+
+# 你的站点根地址（不带结尾斜杠）。卡片里的「查看本次线路图」按钮和线路图截图
+# 都靠它拼绝对地址。本地开发填 http://127.0.0.1:8788，部署后换成线上地址：
+#   https://liauto-lark-push.your-name.workers.dev  或  https://car.example.com
+PUBLIC_BASE_URL=http://127.0.0.1:8788

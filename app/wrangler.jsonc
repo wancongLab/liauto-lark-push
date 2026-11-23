@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "liauto-lark-push",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-27",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": true
+  },
+
+  // ★ 换成你自己的 D1：`npx wrangler d1 create liauto-lark-push` 会打印 database_id
+  "d1_databases": [
+    { "binding": "DB", "database_name": "liauto-lark-push", "database_id": "REPLACE_WITH_YOUR_D1_ID" }
+  ],
+
+  // ★ 换成你自己的 R2（行程线路图、3D 车模海报）
+  "r2_buckets": [
+    { "binding": "MEDIA", "bucket_name": "liauto-lark-push-media" }
+  ],
+
+  "vars": {
+    "TZ": "Asia/Shanghai",
+    //  sample = 用内置模拟数据跑通全链路（不需要理想账号）
+    //  custom = 你自己实现 app/src/lib/vehicle/custom.js
+    "VEHICLE_PROVIDER": "sample",
+
+    //  你的站点根地址（不带结尾斜杠）。卡片里的「查看本次线路图」按钮、
+    //  线路图截图都靠它拼绝对地址。部署前改成你自己的地址，例如
+    //    https://liauto-lark-push.your-name.workers.dev
+    //    https://car.example.com
+    //  留空则：分享按钮不出现、线路图截图跳过（其余功能不受影响）。
+    "PUBLIC_BASE_URL": "http://127.0.0.1:8788"
+  },
+
+  "triggers": {
+    "crons": ["* * * * *"]
+  }
+}

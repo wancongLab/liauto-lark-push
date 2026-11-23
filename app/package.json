@@ -1,0 +1,16 @@
+{
+  "name": "liauto-lark-push",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Li Auto → Feishu bot: vehicle data collection + 34 rich cards + web panel + trip share page (Cloudflare Workers)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

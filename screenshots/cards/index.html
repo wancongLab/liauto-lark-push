@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>liauto-lark-push · 卡片总览</title>
+<style>
+ :root{--bg:#0E1116;--card:#151A21;--line:#212934;--fg:#E8EEF5;--fg2:#C9D3DF;--dim:#7E8B9B}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--bg);color:var(--fg2);
+   font:14px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+   -webkit-font-smoothing:antialiased}
+ header{padding:34px 40px 26px;border-bottom:1px solid var(--line)}
+ header h1{margin:0 0 6px;font-size:22px;color:var(--fg);letter-spacing:.2px}
+ header p{margin:0;color:var(--dim);font-size:13px}
+ header .tags{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+ header .tags span{font-size:12px;color:#8FA0B4;border:1px solid var(--line);
+   border-radius:999px;padding:3px 10px}
+ main{padding:0 40px 72px}
+ section{margin-top:54px}
+ section+section{border-top:1px solid var(--line);padding-top:46px}
+ .sec-h{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+ .sec-h h2{margin:0;font-size:16px;color:var(--fg);font-weight:650;display:flex;
+   align-items:baseline;gap:9px;letter-spacing:.2px}
+ .sec-h h2 i{font-style:normal;font-size:12px;color:#4A7CF7;font-family:ui-monospace,monospace}
+ .sec-h p{margin:0;font-size:12.5px;color:var(--dim);flex:1;min-width:200px}
+ .sec-h em{font-style:normal;font-size:12px;color:#5C6979}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(292px,1fr));gap:22px;align-items:start}
+ figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+ figure img{width:100%;display:block;border-radius:9px}
+ figcaption{margin-top:10px;display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#8FA0B4}
+ figcaption b{color:var(--fg);font-weight:600}
+ figcaption span{color:#5C6979;font-family:ui-monospace,monospace;font-size:11px}
+</style></head><body>
+<header>
+ <h1>飞书卡片 · 34 张</h1>
+ <p>全部由线上真实卡片 JSON 渲染（dry_run 取结构，不发送），图标为自绘 PNG，行程线路图为高德底图实拍。</p>
+ <div class="tags"><span>6 个栏目</span><span>21 张卡 + 11 个变体</span>
+ <span>停车照片已脱敏占位</span><span>「更多信息」全部展开</span></div>
+</header>
+<main>
+<section><div class="sec-h"><h2><i>01</i>状态与查询</h2><p>打开面板第一眼要知道的：车在哪、还有多少电、下次保养、附近油价</p><em>6 张</em></div><div class="grid"><figure><img src="01-vehicle-status.png" alt="车辆状态" loading="lazy"><figcaption><b>车辆状态</b><span>01-vehicle-status</span></figcaption></figure>
+<figure><img src="02-battery.png" alt="电量续航" loading="lazy"><figcaption><b>电量续航</b><span>02-battery</span></figcaption></figure>
+<figure><img src="12-where.png" alt="车辆位置" loading="lazy"><figcaption><b>车辆位置</b><span>12-where</span></figcaption></figure>
+<figure><img src="13-maintenance-query.png" alt="保养剩余" loading="lazy"><figcaption><b>保养剩余</b><span>13-maintenance-query</span></figcaption></figure>
+<figure><img src="17-fuel-price.png" alt="油价" loading="lazy"><figcaption><b>油价</b><span>17-fuel-price</span></figcaption></figure>
+<figure><img src="18-support.png" alt="帮助与客服" loading="lazy"><figcaption><b>帮助与客服</b><span>18-support</span></figcaption></figure></div></section>
+<section><div class="sec-h"><h2><i>02</i>用车报告</h2><p>按日 / 周 / 月自动汇总，含里程、电耗、花费与柱状图</p><em>7 张</em></div><div class="grid"><figure><img src="03-today.png" alt="今日小结" loading="lazy"><figcaption><b>今日小结</b><span>03-today</span></figcaption></figure>
+<figure><img src="04-daily-summary.png" alt="昨日用车小结" loading="lazy"><figcaption><b>昨日用车小结</b><span>04-daily-summary</span></figcaption></figure>
+<figure><img src="05-week-now.png" alt="本周用车小结" loading="lazy"><figcaption><b>本周用车小结</b><span>05-week-now</span></figcaption></figure>
+<figure><img src="06-week-last.png" alt="上周用车小结" loading="lazy"><figcaption><b>上周用车小结</b><span>06-week-last</span></figcaption></figure>
+<figure><img src="07-month-now.png" alt="本月用车小结" loading="lazy"><figcaption><b>本月用车小结</b><span>07-month-now</span></figcaption></figure>
+<figure><img src="08-month-last.png" alt="上月用车小结" loading="lazy"><figcaption><b>上月用车小结</b><span>08-month-last</span></figcaption></figure>
+<figure><img src="09-energy.png" alt="能耗小结" loading="lazy"><figcaption><b>能耗小结</b><span>09-energy</span></figcaption></figure></div></section>
+<section><div class="sec-h"><h2><i>03</i>充电与补能</h2><p>充电全程 + 账单 + 电价，加油卡可以直接在卡里输单价</p><em>7 张</em></div><div class="grid"><figure><img src="10-charge-state.png" alt="充电情况" loading="lazy"><figcaption><b>充电情况</b><span>10-charge-state</span></figcaption></figure>
+<figure><img src="14-charge-bills.png" alt="充电账单" loading="lazy"><figcaption><b>充电账单</b><span>14-charge-bills</span></figcaption></figure>
+<figure><img src="15-charge-history.png" alt="最近充电" loading="lazy"><figcaption><b>最近充电</b><span>15-charge-history</span></figcaption></figure>
+<figure><img src="16-charge-price.png" alt="当前电价" loading="lazy"><figcaption><b>当前电价</b><span>16-charge-price</span></figcaption></figure>
+<figure><img src="21-charge-start.png" alt="开始充电" loading="lazy"><figcaption><b>开始充电</b><span>21-charge-start</span></figcaption></figure>
+<figure><img src="22-charge-done.png" alt="充电完成" loading="lazy"><figcaption><b>充电完成</b><span>22-charge-done</span></figcaption></figure>
+<figure><img src="26-refuel.png" alt="加油已完成" loading="lazy"><figcaption><b>加油已完成</b><span>26-refuel</span></figcaption></figure></div></section>
+<section><div class="sec-h"><h2><i>04</i>行程与停车</h2><p>每趟行程会自动生成小结与线路图；回到家或在外停车都会推停车照片</p><em>5 张</em></div><div class="grid"><figure><img src="11-trip.png" alt="行程小结" loading="lazy"><figcaption><b>行程小结</b><span>11-trip</span></figcaption></figure>
+<figure><img src="23-parked-home.png" alt="到家了（停车照片）" loading="lazy"><figcaption><b>到家了（停车照片）</b><span>23-parked-home</span></figcaption></figure>
+<figure><img src="24-parked-out.png" alt="车辆已停好（在外停车）" loading="lazy"><figcaption><b>车辆已停好（在外停车）</b><span>24-parked-out</span></figcaption></figure>
+<figure><img src="25-departure.png" alt="离开家了" loading="lazy"><figcaption><b>离开家了</b><span>25-departure</span></figcaption></figure>
+<figure><img src="27-parking-drain.png" alt="停车掉电" loading="lazy"><figcaption><b>停车掉电</b><span>27-parking-drain</span></figcaption></figure></div></section>
+<section><div class="sec-h"><h2><i>05</i>提醒与告警</h2><p>只在需要你注意的时候才响，不是天天推</p><em>7 张</em></div><div class="grid"><figure><img src="28-vehicle-anomaly.png" alt="车辆异常" loading="lazy"><figcaption><b>车辆异常</b><span>28-vehicle-anomaly</span></figcaption></figure>
+<figure><img src="29-charge-aborted.png" alt="充电提前结束" loading="lazy"><figcaption><b>充电提前结束</b><span>29-charge-aborted</span></figcaption></figure>
+<figure><img src="30-charge-price-push.png" alt="建议及时充电" loading="lazy"><figcaption><b>建议及时充电</b><span>30-charge-price-push</span></figcaption></figure>
+<figure><img src="31-energy-low.png" alt="能量不足提醒" loading="lazy"><figcaption><b>能量不足提醒</b><span>31-energy-low</span></figcaption></figure>
+<figure><img src="32-cred-warning.png" alt="授权即将过期" loading="lazy"><figcaption><b>授权即将过期</b><span>32-cred-warning</span></figcaption></figure>
+<figure><img src="33-ota-upgraded.png" alt="车辆已升级" loading="lazy"><figcaption><b>车辆已升级</b><span>33-ota-upgraded</span></figcaption></figure>
+<figure><img src="34-maintenance-push.png" alt="保养提醒" loading="lazy"><figcaption><b>保养提醒</b><span>34-maintenance-push</span></figcaption></figure></div></section>
+<section><div class="sec-h"><h2><i>06</i>指令与设置</h2><p>发一句话就能查，推送开关 11 项都能在卡里点</p><em>2 张</em></div><div class="grid"><figure><img src="19-command-menu.png" alt="指令菜单" loading="lazy"><figcaption><b>指令菜单</b><span>19-command-menu</span></figcaption></figure>
+<figure><img src="20-push-switches.png" alt="推送开关" loading="lazy"><figcaption><b>推送开关</b><span>20-push-switches</span></figcaption></figure></div></section>
+</main></body></html>
